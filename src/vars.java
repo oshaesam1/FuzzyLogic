@@ -1,10 +1,11 @@
 import java.util.List;
 
-public class var {
+public class vars {
     String name;
     String type;
-    List<Integer>range;
-    var(  String name, String type, List<Integer>range){
+    List<Double> range;
+
+    vars(  String name, String type, List<Double>range){
         this.name=name;
         this.type=type;
         this.range=range;
