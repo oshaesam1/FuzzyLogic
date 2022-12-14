@@ -9,7 +9,7 @@ public class set {
     int lower;
     int upper;
     ArrayList<vars> variables = new ArrayList<>();
-
+    HashMap<String,Double>fuzzy=new HashMap();
     set(String name, String type, int lower, int upper) {
         this.name = name;
         this.type = type;
@@ -50,8 +50,8 @@ public class set {
                         intercept = y1 - (slope * x1);
                         memebership = (crispValue * intercept) + intercept;
                         memebershipDegree.put(values.get(i).name, memebership);
+                        fuzzy.put(values.get(i).name,memebership);
                         break;
-
                     }
                 }
 

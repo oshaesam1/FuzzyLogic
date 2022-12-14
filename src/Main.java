@@ -3,6 +3,28 @@ import java.util.*;
 public class Main {
     static List<set> allSets = new ArrayList<>();
 
+    public static HashMap<String, Double> inferenceRule(List<set> allSets, String[] splitted) {
+        List<Double> values = new ArrayList();
+        //input1 high and input2 low => output low
+        for (int i = 0; i < splitted.length; i++) {
+            for (int j = 0; j < allSets.size(); j++) {
+                if (allSets.get(j).name.equals(splitted[i])) {
+                    for (int k = 0; k < allSets.get(j).variables.size(); k++) {
+                        if (allSets.get(j).variables.get(k).name == splitted[i + 1]) {
+                            values.add(allSets.get(j).fuzzy.get(splitted[i + 1]));
+                        }
+                    }
+                }
+            }
+
+//                if (splitted[i].equals("or")) {
+//                    Math.max(values.get(j), values.get(j+1));
+//                }
+
+        }
+        return;
+    }
+
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter num of Sets : ");
@@ -34,16 +56,28 @@ public class Main {
                 }
                 vars v = new vars(varName, varType, range);
                 s.addVar(v);
-                if (varType.equalsIgnoreCase("in")) {
-                    System.out.println("Enter Crisp value :");
-                    double crisp = sc.nextDouble();
-                    s.Fuzzification(crisp, s.variables);
 
-                }
                 System.out.println(v.name + " " + v.type + " " + v.range);
             }
             allSets.add(s);
+            if (s.type.equals("in")) {
+                System.out.println("Enter Crisp value :");
+                double crisp = sc.nextDouble();
+                s.Fuzzification(crisp, s.variables);
+                s.Fuzzification(crisp, s.variables).entrySet().forEach(entry -> {
+                    System.out.println(entry.getKey() + " => " + entry.getValue());
+                });
+            }
         }
+        System.out.println("Enter rule num :");
+        int rulesNum = sc.nextInt();
+        for (int i = 0; i < rulesNum; i++) {
+            String str = sc.nextLine();
+            String[] splited = str.split("\\s+");
+            inferenceRule(allSets, splited);
+
+        }
+
 //        System.out.println("Enter crisp values :");
 //        for(int i=0;i<allSets.size()-1;i++){
 //        int size=sc.nextInt();
