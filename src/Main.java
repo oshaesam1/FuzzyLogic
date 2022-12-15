@@ -2,9 +2,9 @@ import java.util.*;
 
 public class Main {
     static List<set> allSets = new ArrayList<>();
-
+    static List<Double> values = new ArrayList();
+   static HashMap<String,Double>finalRes=new HashMap();
     public static HashMap<String, Double> inferenceRule(List<set> allSets, String[] splitted) {
-        List<Double> values = new ArrayList();
         //input1 high and input2 low => output low
         for (int i = 0; i < splitted.length; i++) {
             for (int j = 0; j < allSets.size(); j++) {
@@ -16,14 +16,43 @@ public class Main {
                     }
                 }
             }
-
-//                if (splitted[i].equals("or")) {
-//                    Math.max(values.get(j), values.get(j+1));
-//                }
-
         }
-        return;
+      double result= operators(splitted);
+        finalRes.put(splitted[splitted.length-1],result);
+        return finalRes;
     }
+
+    public static double operators(String[] splitted) {
+        //input1 high and input2 low => output low
+        double retVal = 0;
+        int j = 0;
+        while (j < values.size()) {
+            for (int i = 0; i < splitted.length; i++) {
+                if (splitted[i].equals("or")) {
+                    retVal = Math.max(values.get(j), values.get(j + 1));
+                    values.add(j+1,retVal);
+                    j++;
+                }
+                if (splitted[i].equals("and")) {
+                    retVal = Math.min(values.get(j), values.get(j + 1));
+                    values.add(j+1,retVal);
+                    j++;
+                }
+                if (splitted[i].equals("and_not")) {
+                    retVal = 1-Math.min(values.get(j), values.get(j + 1));
+                    values.add(j+1,retVal);
+                    j++;
+                }
+                if (splitted[i].equals("or_not")) {
+                    retVal = 1-Math.max(values.get(j), values.get(j + 1));
+                    values.add(j+1,retVal);
+                    j++;
+                }
+            }
+        }
+        return retVal;
+    }
+    //return
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
@@ -69,25 +98,17 @@ public class Main {
                 });
             }
         }
-        System.out.println("Enter rule num :");
+        System.out.println("Enter rules num :");
         int rulesNum = sc.nextInt();
         for (int i = 0; i < rulesNum; i++) {
+            System.out.println("Enter the Rule :");
             String str = sc.nextLine();
             String[] splited = str.split("\\s+");
             inferenceRule(allSets, splited);
-
         }
+        //System.out.println(finalRes.get("low"));
 
-//        System.out.println("Enter crisp values :");
-//        for(int i=0;i<allSets.size()-1;i++){
-//        int size=sc.nextInt();
-//        }
-//        for (int i=0;i<size;i++){
-//
-//        }
-//        for (int i = 0; i < allSets.size(); i++) {
-//            System.out.println(allSets.get(i).name);
-//        }
+
     }
 
 
