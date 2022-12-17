@@ -9,7 +9,8 @@ public class set {
     int lower;
     int upper;
     ArrayList<vars> variables = new ArrayList<>();
-    HashMap<String,Double>fuzzy=new HashMap();
+    HashMap<String, Double> fuzzy = new HashMap();
+
     set(String name, String type, int lower, int upper) {
         this.name = name;
         this.type = type;
@@ -17,6 +18,8 @@ public class set {
         this.upper = upper;
 
     }
+
+
 
     void addVar(vars v) {
         variables.add(v);
@@ -48,18 +51,23 @@ public class set {
                         }
                         slope = (y2 - y1) / (x2 - x1);
                         intercept = y1 - (slope * x1);
-                        memebership = (crispValue * intercept) + intercept;
+                        memebership = (crispValue * slope) + intercept;
                         memebershipDegree.put(values.get(i).name, memebership);
-                        fuzzy.put(values.get(i).name,memebership);
+                        fuzzy.put(values.get(i).name, memebership);
                         break;
                     }
                 }
 
             } else if ((crispValue > values.get(i).range.get(values.get(i).range.size() - 1) || crispValue < values.get(i).range.get(0))) {
                 memebershipDegree.put(values.get(i).name, 0.0);
+                fuzzy.put(values.get(i).name, 0.0);
             }
 
         }
         return memebershipDegree;
     }
+
+
+
+
 }
