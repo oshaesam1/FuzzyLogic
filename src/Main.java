@@ -1,38 +1,33 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
 
 public class Main {
-    static List<set> allSets = new ArrayList<>();
+    static List<Set> allSets = new ArrayList<>();
     static ArrayList<String> fuzzyRules = new ArrayList<>();
     public static HashMap<String, Double> fuzzy = new HashMap<>();
     public static HashMap<String, Double> out = new HashMap<>();
 
-    public static double deffuzification(HashMap<String, Double> fuzzifiedValues, ArrayList<vars> allvars) {
+    public static String deffuzification(HashMap<String, Double> fuzzifiedValues, ArrayList<Vars> allvars, String name) {
         double predicted;
-        //ArrayList <Double> centroids = new ArrayList<>();
+        String value;
+        double sumFuzzified = 0.0, multiply = 0.0;
         HashMap<String, Double> centroids = new HashMap<>();
-        for (vars var : allvars) {
+        for (Vars var : allvars) {
             centroids.put(var.name, var.GetCentroid());
         }
-
-        double sumFuzzifiedValues = 0.0, numer = 0.0;
-
         for (Map.Entry<String, Double> entry : fuzzifiedValues.entrySet()) {
-            double fuzzifiedValue = entry.getValue();
-            sumFuzzifiedValues += fuzzifiedValue;
-            numer += fuzzifiedValue * centroids.get(entry.getKey());
+            double fuzzified = entry.getValue();
+            sumFuzzified += fuzzified;
+            multiply += fuzzified * centroids.get(entry.getKey());
         }
+        predicted = multiply / sumFuzzified;
 
-        predicted = numer / sumFuzzifiedValues;
+        String max = getMaxVariable(out);
 
-        //System.out.println(predicted);
-        return predicted;
+        return "The predicted " + name + " is " + max + " " + predicted;
     }
 
-
-    public static String getMaxi(HashMap<String, Double> out) {
+    public static String getMaxVariable(HashMap<String, Double> out) {
         double maximum = Collections.max(out.values());
         String max = "";
         for (Map.Entry<String, Double> entry : out.entrySet()) {
@@ -43,69 +38,75 @@ public class Main {
     }
 
     public static void main(String[] args) throws IOException {
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Enter num of Sets : ");
-        int numOfSets = sc.nextInt();
-        for (int k = 0; k < numOfSets; k++) {
-            System.out.println("Enter name , type , Range for this Set :");
-            System.out.println("Enter num of Variables for this set");
-            System.out.println("Enter name , type (tri,trap) , range");
 
-            String name = sc.next();
-            String type = sc.next();
-            int st = sc.nextInt();
-            int end = sc.nextInt();
-            set s = new set(name, type, st, end);
-            allSets.add(s);
-            int numVars = sc.nextInt();
-            for (int i = 0; i < numVars; i++) {
-                int numIt;
-                String varName = sc.next();
-                String varType = sc.next();
-                List<Double> range = new ArrayList<>();
-                if (varType.equalsIgnoreCase("tri")) {
-                    numIt = 3;
-                } else {
-                    numIt = 4;
-                }
-                for (int j = 0; j < numIt; j++) {
-                    double in = sc.nextDouble();
-                    range.add(in);
-                }
-                vars v = new vars(varName, varType, range);
-                s.addVar(v);
+        File file = new File("example.txt");
+        File outFile = new File("output.txt");
+        Scanner scanner = new Scanner(file);
+        BufferedWriter writer = new BufferedWriter(new FileWriter(outFile));
+        String output = "";
+        int outCounter = 0;
 
-                System.out.println(v.name + " " + v.type + " " + v.range);
+        while (scanner.hasNextLine()) {
+            int numOfSets = scanner.nextInt();
+            for (int k = 0; k < numOfSets; k++) {
+                String name = scanner.next();
+                String type = scanner.next();
+                int st = scanner.nextInt();
+                int end = scanner.nextInt();
+                Set s = new Set();
+                int numVars = scanner.nextInt();
+                for (int i = 0; i < numVars; i++) {
+                    int numIt;
+                    String varName = scanner.next();
+                    String varType = scanner.next();
+                    List<Double> range = new ArrayList<>();
+                    if (varType.equalsIgnoreCase("tri")) {
+                        numIt = 3;
+                    } else {
+                        numIt = 4;
+                    }
+                    for (int j = 0; j < numIt; j++) {
+                        double in = scanner.nextDouble();
+                        range.add(in);
+                    }
+                    Vars v = new Vars(varName, varType, range);
+                    s.addVar(v);
+                    s.setSet(name, type, st, end);
+
+                }
+
+                if (s.type.equals("in")) {
+                    double crisp = scanner.nextDouble();
+                    fuzzy = s.Fuzzification(crisp, s.variables);
+                }
+                if (s.type.equals("out")) outCounter++;
+                allSets.add(s);
+
             }
-            allSets.add(s);
-            if (s.type.equals("in")) {
-                System.out.println("Enter Crisp value :");
-                double crisp = sc.nextDouble();
-                fuzzy = s.Fuzzification(crisp, s.variables);
-                fuzzy.entrySet().forEach(entry -> {
+            for (int k = outCounter; k > 0; k--) {
+                int rulesNum = scanner.nextInt();
+                scanner.nextLine();
+                for (int i = 0; i < rulesNum; i++) {
+                    String str = scanner.nextLine();
+                    fuzzyRules.add(str);
+
+                }
+
+                out = Rules.inferenceRule(fuzzyRules, allSets);
+                out.entrySet().forEach(entry -> {
                     System.out.println(entry.getKey() + " => " + entry.getValue());
                 });
+                output = deffuzification(out, allSets.get(allSets.size() - k).variables, allSets.get(allSets.size() - k).name);
+                System.out.println(output);
+                writer.write(output);
             }
         }
-        System.out.println("Enter rules num :");
-        int rulesNum = sc.nextInt();
-        BufferedReader bfn = new BufferedReader(
-                new InputStreamReader(System.in));
 
-        // String reading internally
-        System.out.println("Enter the Rule :");
-        for (int i = 0; i < rulesNum; i++) {
-            String str = bfn.readLine();
-            fuzzyRules.add(str);
-        }
+        writer.close();
 
-        out = Rules.inferenceRule(fuzzyRules, allSets);
-        String max = getMaxi(out);
-        double prediction = deffuzification(out, allSets.get(allSets.size() - 1).variables);
-        System.out.println("The predicted risk  is " + max + " " + prediction);
-    }
 
-}
+}    }
+
 
 
 

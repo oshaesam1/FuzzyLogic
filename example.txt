@@ -1,6 +1,4 @@
-3
-
-
+4
 
 proj_funding in 0 100
 4
@@ -8,15 +6,14 @@ very_low trap 0 0 10 30
 low trap 10 30 40 60
 medium trap 40 60 70 90
 high trap 70 90 100 100
-
-/////////50
+50
 
 exp_level in 0 60
 3
 beginner tri 0 15 30
 intermediate tri 15 30 45
 expert tri 30 60 60
-///////// 40
+40
 
 risk out 0 100
 3
@@ -24,7 +21,11 @@ low tri 0 25 50
 normal tri 25 50 75
 high tri 50 100 100
 
-
+hye out 0 100
+3
+low tri 0 25 50
+normal tri 25 50 75
+high tri 50 100 100
 
 5
 proj_funding high or exp_level expert => risk low
@@ -32,3 +33,9 @@ proj_funding medium and exp_level intermediate => risk normal
 proj_funding medium and exp_level beginner => risk normal
 proj_funding low and exp_level beginner => risk high
 proj_funding very_low and_not exp_level expert => risk high
+5
+proj_funding high or exp_level expert => hye low
+proj_funding medium or exp_level intermediate => hye normal
+proj_funding medium and exp_level beginner => hye normal
+proj_funding low and exp_level beginner => hye high
+proj_funding very_low and_not exp_level expert => hye high

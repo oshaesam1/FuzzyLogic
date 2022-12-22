@@ -1,17 +1,20 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
-public class set {
+public class Set {
     String name;
     String type;
     int lower;
     int upper;
-    ArrayList<vars> variables = new ArrayList<>();
+    ArrayList<Vars> variables = new ArrayList<>();
     HashMap<String, Double> fuzzy = new HashMap();
 
-    set(String name, String type, int lower, int upper) {
+    public Set() {
+
+    }
+
+    void setSet(String name, String type, int lower, int upper) {
         this.name = name;
         this.type = type;
         this.lower = lower;
@@ -20,13 +23,12 @@ public class set {
     }
 
 
-
-    void addVar(vars v) {
+    void addVar(Vars v) {
         variables.add(v);
     }
 
-    HashMap<String, Double> Fuzzification(double crispValue, ArrayList<vars> values) {
-        HashMap<String, Double> memebershipDegree = new HashMap<>();
+    HashMap<String, Double> Fuzzification(double crispValue, ArrayList<Vars> values) {
+
         ArrayList<Double> TRAP = new ArrayList<>(Arrays.asList(0.0, 1.0, 1.0, 0.0));
         ArrayList<Double> TRI = new ArrayList<>(Arrays.asList(0.0, 1.0, 0.0));
 
@@ -52,22 +54,18 @@ public class set {
                         slope = (y2 - y1) / (x2 - x1);
                         intercept = y1 - (slope * x1);
                         memebership = (crispValue * slope) + intercept;
-                        memebershipDegree.put(values.get(i).name, memebership);
                         fuzzy.put(values.get(i).name, memebership);
                         break;
                     }
                 }
 
             } else if ((crispValue > values.get(i).range.get(values.get(i).range.size() - 1) || crispValue < values.get(i).range.get(0))) {
-                memebershipDegree.put(values.get(i).name, 0.0);
                 fuzzy.put(values.get(i).name, 0.0);
             }
 
         }
-        return memebershipDegree;
+        return fuzzy;
     }
-
-
 
 
 }
